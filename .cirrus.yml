@@ -1,26 +1,33 @@
 env:
-    MANIFEST: https://github.com/PixelExperience/manifest.git -b eleven-plus
-    DEVICE: miatoll
-    OEM: xiaomi
-    DT_LINK: https://github.com/PixelExperience-Devices/device_xiaomi_miatoll.git
+    MANIFEST: https://github.com/PixysOS/manifest -b thirteen
+    DEVICE: a73xq
+    OEM: samsung
+    COMMON: sm7325-common
+    DT_LINK: https://github.com/ROM-CUSTOM-SAMSUNG/android_device_samsung_a73xq -b thirteen
     DT_PATH: device/$OEM/$DEVICE
-    VT_LINK: https://gitlab.pixelexperience.org/android/vendor-blobs/vendor_xiaomi_miatoll.git
+    DT_COMMON_LINK: https://github.com/ROM-CUSTOM-SAMSUNG/android_device_samsung_sm7325-common -b thirteen
+    DT_COMMON_PATH: device/$OEM/$COMMON
+    VT_LINK: https://github.com/ROM-CUSTOM-SAMSUNG/android_vendor_samsung_a73xq -b thirteen
     VT_PATH: vendor/$OEM/$DEVICE
-    KT_LINK: https://github.com/ArrowOS-Devices/android_kernel_xiaomi_sm6250.git
-    PLATFORM: sm6250
+    VT_COMMON_LINK: https://github.com/ROM-CUSTOM-SAMSUNG/android_vendor_samsung_sm7325-common -b thirteen
+    VT_COMMON_PATH: vendor/$OEM/$COMMON
+    KT_LINK: https://gitlab.com/nguyenhung9xdev2022/android_kernel_samsung_sm7325 -b thirteen
+    PLATFORM: sm7325
     KT_PATH: kernel/$OEM/$PLATFORM
-    TARGET: bacon
+    HARDWARE_LINK: https://github.com/PixelExperience/hardware_samsung -b thirteen
+    HARDWARE_PATH: hardware/$OEM
+    TARGET: pixys
     EXTRA_CMD: export SKIP_ABI_CHECKS=true
-    LUNCH_COMBO: aosp_${DEVICE}-userdebug
-    OUTPUT: PixelExperience*.zip
+    LUNCH_COMBO: pixys_${DEVICE}-userdebug
+    OUTPUT: Pixys*.zip
 
 task:
   name: "Setting Up, Syncing, Building and Uploading..."
-  timeout_in: 240m  
+  timeout_in: 940m  
   container:
-      image: ghcr.io/sushrut1101/docker:arch
-      cpu: 4
-      memory: 16G
+      image: ghcr.io/nguyenhung9xdev2022/docker:arch
+      cpu: 8
+      memory: 32G
 
 
 
@@ -38,8 +45,12 @@ task:
       - repo init --depth=1 -u $MANIFEST
       - repo sync -j4 --force-sync --no-tags --no-clone-bundle
       - git clone $DT_LINK $DT_PATH
+      - git clone $DT_COMMON_LINK $DT_COMMON_PATH
       - git clone $VT_LINK $VT_PATH
+      - git clone $VT_COMMON_LINK $VT_COMMON_PATH
       - git clone $KT_LINK $KT_PATH
+      - rm -rf hardware/samsung
+      - git clone $HARDWARE_LINK $HARDWARE_PATH
       - echo "============================"
       - echo "Syncing Complete!"
       - echo "============================"
